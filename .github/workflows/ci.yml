@@ -38,7 +38,11 @@ jobs:
 
       - name: C++ tests
         run: |
-          uv run cmake -S . -B build -DFASTTEXT_PARALLEL_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          PYTHON_EXECUTABLE="$(uv run python -c 'import sys; print(sys.executable)')"
+          uv run cmake -S . -B build \
+            -DPython3_EXECUTABLE="${PYTHON_EXECUTABLE}" \
+            -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
+            -DCMAKE_BUILD_TYPE=Release
           uv run cmake --build build --parallel
           uv run ctest --test-dir build --output-on-failure
 
@@ -67,7 +71,9 @@ jobs:
 
       - name: Sanitized C++ tests
         run: |
+          PYTHON_EXECUTABLE="$(uv run python -c 'import sys; print(sys.executable)')"
           uv run cmake -S . -B build-${{ matrix.sanitizer }} \
+            -DPython3_EXECUTABLE="${PYTHON_EXECUTABLE}" \
             -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
             -D${{ matrix.cmake-flag }}=ON \
             -DCMAKE_BUILD_TYPE=Debug
