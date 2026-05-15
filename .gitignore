@@ -1,0 +1,17 @@
+.cache/
+.idea/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+build/
+dist/
+*.egg-info/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.dll
+*.bin
+!tests/data/*.bin

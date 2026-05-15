@@ -1,0 +1,7 @@
+include README.md LICENSE CMakeLists.txt .clang-format .pre-commit-config.yaml
+recursive-include src *
+recursive-include cpp *
+recursive-include tests *
+recursive-include benchmarks *
+recursive-include stress *
+recursive-include scripts *
