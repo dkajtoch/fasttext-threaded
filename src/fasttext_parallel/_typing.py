@@ -45,6 +45,7 @@ class OfficialFastTextModule(Protocol):
         epoch: int = 5,
         lr: float = 0.1,
         dim: int = 100,
+        thread: int = 12,
         wordNgrams: int = 1,
         minCount: int = 1,
         verbose: int = 2,

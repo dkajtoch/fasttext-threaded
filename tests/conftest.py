@@ -37,9 +37,10 @@ def tiny_model_path(
     )
     model = official_fasttext.train_supervised(
         input=str(train_path),
-        epoch=20,
-        lr=0.5,
+        epoch=10,
+        lr=0.05,
         dim=16,
+        thread=1,
         wordNgrams=1,
         minCount=1,
         verbose=0,
