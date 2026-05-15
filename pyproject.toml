@@ -30,7 +30,13 @@ dependencies = ["numpy>=1.23,<2"]
 [project.optional-dependencies]
 test = ["fasttext>=0.9.2", "pytest>=8.0", "pytest-cov>=5.0"]
 bench = ["fasttext>=0.9.2", "matplotlib>=3.8", "psutil>=5.9"]
-dev = ["mypy>=1.10", "pre-commit>=3.7", "ruff>=0.6", "twine>=5.0"]
+dev = [
+  "cibuildwheel>=2.23,<3",
+  "mypy>=1.10",
+  "pre-commit>=3.7",
+  "ruff>=0.6",
+  "twine>=5.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/dariuszkajtoch/fasttext-parallel"
@@ -77,3 +83,14 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-*"
+skip = ["*-musllinux_*", "pp*"]
+test-command = "python -c \"import fasttext_parallel; print(fasttext_parallel.__all__)\""
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+
+[tool.cibuildwheel.macos]
+archs = ["auto"]

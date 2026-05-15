@@ -7,10 +7,19 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-13, macos-14]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
       - uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
@@ -32,3 +41,52 @@ jobs:
           uv run cmake -S . -B build -DFASTTEXT_PARALLEL_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           uv run cmake --build build --parallel
           uv run ctest --test-dir build --output-on-failure
+
+  runtime-safety:
+    name: runtime safety (${{ matrix.sanitizer }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [asan, tsan]
+        include:
+          - sanitizer: asan
+            cmake-flag: FASTTEXT_PARALLEL_ENABLE_ASAN
+          - sanitizer: tsan
+            cmake-flag: FASTTEXT_PARALLEL_ENABLE_TSAN
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Sanitized C++ tests
+        run: |
+          uv run cmake -S . -B build-${{ matrix.sanitizer }} \
+            -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
+            -D${{ matrix.cmake-flag }}=ON \
+            -DCMAKE_BUILD_TYPE=Debug
+          uv run cmake --build build-${{ matrix.sanitizer }} --parallel
+          uv run ctest --test-dir build-${{ matrix.sanitizer }} --output-on-failure
+
+  stress-smoke:
+    name: stress smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync --all-extras
+
+      - name: Shared-model stress smoke
+        run: uv run python scripts/stress_smoke.py --duration 5 --threads 4 --callers 8 --batch-size 512

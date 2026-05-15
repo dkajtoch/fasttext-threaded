@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.18)
 project(fasttext_parallel LANGUAGES CXX)
 
 option(FASTTEXT_PARALLEL_BUILD_TESTS "Build C++ tests" OFF)
+option(FASTTEXT_PARALLEL_ENABLE_ASAN "Build with AddressSanitizer" OFF)
+option(FASTTEXT_PARALLEL_ENABLE_TSAN "Build with ThreadSanitizer" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,6 +51,27 @@ set_target_properties(fasttext_vendor PROPERTIES
   POSITION_INDEPENDENT_CODE ON
 )
 
+if(FASTTEXT_PARALLEL_ENABLE_ASAN AND FASTTEXT_PARALLEL_ENABLE_TSAN)
+  message(FATAL_ERROR "AddressSanitizer and ThreadSanitizer cannot be enabled together")
+endif()
+
+set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "")
+if(FASTTEXT_PARALLEL_ENABLE_ASAN)
+  set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "-fsanitize=address,undefined")
+elseif(FASTTEXT_PARALLEL_ENABLE_TSAN)
+  set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "-fsanitize=thread")
+endif()
+
+if(FASTTEXT_PARALLEL_SANITIZER_FLAGS)
+  foreach(target fasttext_vendor)
+    target_compile_options(${target} PRIVATE
+      ${FASTTEXT_PARALLEL_SANITIZER_FLAGS}
+      -fno-omit-frame-pointer
+    )
+    target_link_options(${target} PRIVATE ${FASTTEXT_PARALLEL_SANITIZER_FLAGS})
+  endforeach()
+endif()
+
 set(FASTTEXT_PARALLEL_SOURCES
   cpp/src/bindings.cpp
   cpp/src/parallel_model.cpp
@@ -65,6 +88,14 @@ set_target_properties(_fasttext_parallel PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
 )
+
+if(FASTTEXT_PARALLEL_SANITIZER_FLAGS)
+  target_compile_options(_fasttext_parallel PRIVATE
+    ${FASTTEXT_PARALLEL_SANITIZER_FLAGS}
+    -fno-omit-frame-pointer
+  )
+  target_link_options(_fasttext_parallel PRIVATE ${FASTTEXT_PARALLEL_SANITIZER_FLAGS})
+endif()
 
 if(UNIX AND NOT APPLE)
   target_link_libraries(_fasttext_parallel PRIVATE pthread)

@@ -190,6 +190,20 @@ uv run cmake --build build
 uv run ctest --test-dir build --output-on-failure
 ```
 
+Runtime-safety checks are available through sanitizer builds:
+
+```bash
+uv run cmake -S . -B build-asan \
+  -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
+  -DFASTTEXT_PARALLEL_ENABLE_ASAN=ON \
+  -DCMAKE_BUILD_TYPE=Debug
+uv run cmake --build build-asan
+uv run ctest --test-dir build-asan --output-on-failure
+```
+
+Use `FASTTEXT_PARALLEL_ENABLE_TSAN=ON` instead of ASAN for ThreadSanitizer.
+CI also runs a short shared-model stress smoke test.
+
 Ruff and mypy are mandatory quality gates.
 
 ## Release
@@ -207,8 +221,9 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The v1 release workflow publishes the source distribution. Platform wheels can
-be added later with `cibuildwheel`.
+The release workflow builds the source distribution plus Linux and macOS wheels
+with `cibuildwheel`, validates all artifacts, and publishes them with PyPI
+Trusted Publishing.
 
 ## Limitations
 
