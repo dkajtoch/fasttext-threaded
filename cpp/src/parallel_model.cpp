@@ -1,4 +1,4 @@
-#include "fasttext_parallel/parallel_model.h"
+#include "fasttext_threaded/parallel_model.h"
 
 #include <algorithm>
 #include <exception>
@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "fasttext_parallel/errors.h"
+#include "fasttext_threaded/errors.h"
 
-namespace fasttext_parallel {
+namespace fasttext_threaded {
 
 namespace {
 
@@ -25,7 +25,7 @@ std::exception_ptr wrap_worker_exception(std::exception_ptr error) {
     if (error) {
       std::rethrow_exception(error);
     }
-  } catch (const FastTextParallelError&) {
+  } catch (const FastTextThreadedError&) {
     return error;
   } catch (const std::exception& exc) {
     return std::make_exception_ptr(PredictionError(exc.what()));
@@ -122,4 +122,4 @@ PredictionResult ParallelModel::predict_one(const std::string& line, int32_t k,
   return result;
 }
 
-}  // namespace fasttext_parallel
+}  // namespace fasttext_threaded

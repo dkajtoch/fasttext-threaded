@@ -11,8 +11,8 @@ from typing import cast
 
 import psutil
 
-import fasttext_parallel
-from fasttext_parallel._typing import OfficialFastTextModel, OfficialFastTextModule
+import fasttext_threaded
+from fasttext_threaded._typing import OfficialFastTextModel, OfficialFastTextModule
 
 _PROCESS_MODEL: OfficialFastTextModel | None = None
 
@@ -141,8 +141,8 @@ def main() -> None:
     print(f"official_fasttext_load={time.perf_counter() - start:.4f}s")
 
     start = time.perf_counter()
-    parallel = fasttext_parallel.load_model(args.model, threads=args.threads)
-    print(f"fasttext_parallel_load={time.perf_counter() - start:.4f}s")
+    parallel = fasttext_threaded.load_model(args.model, threads=args.threads)
+    print(f"fasttext_threaded_load={time.perf_counter() - start:.4f}s")
 
     expected_labels, expected_probs = baseline.predict(texts[: min(8, len(texts))])
     actual_labels, actual_probs = parallel.predict(texts[: min(8, len(texts))])
@@ -170,7 +170,7 @@ def main() -> None:
         model_copies=1,
     )
     _measure(
-        "fasttext_parallel predict(list[str])",
+        "fasttext_threaded predict(list[str])",
         lambda: sum(len(parallel.predict(batch)[0]) for batch in batches),
         args.repeat,
         model_copies=1,

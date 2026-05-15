@@ -8,7 +8,7 @@ from pathlib import Path
 
 import psutil
 
-import fasttext_parallel
+import fasttext_threaded
 
 
 def _read_texts(path: Path, batch_size: int) -> list[str]:
@@ -36,7 +36,7 @@ def main() -> None:
     args = parser.parse_args()
 
     texts = _read_texts(args.input, args.batch_size)
-    model = fasttext_parallel.load_model(args.model, threads=args.threads)
+    model = fasttext_threaded.load_model(args.model, threads=args.threads)
     stop_at = time.monotonic() + args.duration
     failures: list[BaseException] = []
     lock = threading.Lock()

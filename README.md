@@ -1,6 +1,6 @@
-# fasttext-parallel
+# fasttext-threaded
 
-`fasttext-parallel` is a Python package for running fastText supervised model
+`fasttext-threaded` is a Python package for running fastText supervised model
 inference with one model loaded in memory and a native C++ thread pool doing
 parallel batch prediction.
 
@@ -11,10 +11,10 @@ model memory.
 
 ## Install
 
-Source builds are the supported v1 install path on Linux and macOS:
+Install from PyPI:
 
 ```bash
-pip install fasttext-parallel
+pip install fasttext-threaded
 ```
 
 For local development:
@@ -29,7 +29,7 @@ You need a C++17 compiler and CMake.
 ## Usage
 
 ```python
-from fasttext_parallel import load_model
+from fasttext_threaded import load_model
 
 model = load_model("model.bin", threads=16)
 
@@ -86,8 +86,8 @@ This package targets the common production inference shape:
 The package exposes custom exceptions:
 
 ```python
-from fasttext_parallel import (
-    FastTextParallelError,
+from fasttext_threaded import (
+    FastTextThreadedError,
     InvalidInputError,
     ModelLoadError,
     PredictionError,
@@ -117,8 +117,8 @@ Run:
 
 ```bash
 uv run python benchmarks/benchmark_inference.py \
-  --model .cache/fasttext-parallel/lid/lid.176.bin \
-  --input .cache/fasttext-parallel/lid/lid_input.txt \
+  --model .cache/fasttext-threaded/lid/lid.176.bin \
+  --input .cache/fasttext-threaded/lid/lid_input.txt \
   --threads 16 \
   --batch-size 4096
 ```
@@ -129,7 +129,7 @@ The benchmark compares:
 - official fastText `predict(list[str])`
 - official fastText with `ThreadPoolExecutor`
 - official fastText with `ProcessPoolExecutor`
-- `fasttext_parallel.predict(list[str])`
+- `fasttext_threaded.predict(list[str])`
 
 Reported metrics include throughput, latency percentiles, model load time,
 RSS memory, model-copy count, worker count, and a small parity sample.
@@ -138,8 +138,8 @@ For scaling plots across native threads, Python threads, and Python processes:
 
 ```bash
 uv run python benchmarks/benchmark_scaling.py \
-  --model .cache/fasttext-parallel/lid/lid.176.bin \
-  --input .cache/fasttext-parallel/lid/lid_input.txt \
+  --model .cache/fasttext-threaded/lid/lid.176.bin \
+  --input .cache/fasttext-threaded/lid/lid_input.txt \
   --workers 1,2,4,8,16 \
   --process-workers 1,2,4 \
   --batch-size 4096 \
@@ -148,9 +148,9 @@ uv run python benchmarks/benchmark_scaling.py \
 
 This writes:
 
-- `.cache/fasttext-parallel/scaling/scaling_results.csv`
-- `.cache/fasttext-parallel/scaling/scaling_metadata.json`
-- `.cache/fasttext-parallel/scaling/scaling_plot.png`
+- `.cache/fasttext-threaded/scaling/scaling_results.csv`
+- `.cache/fasttext-threaded/scaling/scaling_metadata.json`
+- `.cache/fasttext-threaded/scaling/scaling_plot.png`
 
 The scaling benchmark records wall time, parent-plus-child CPU time, RSS,
 model-copy count, machine metadata, and a four-panel plot. Each measured
@@ -164,8 +164,8 @@ batch size 2048, and 5 repeats:
 |---|---:|---:|---:|---:|
 | official fastText batch | 1 | 1 | 284,996 | 192 MB |
 | official fastText + Python threads | 16 | 1 | 178,204 | 200 MB |
-| `fasttext_parallel` native threads | 8 | 1 | 815,628 | 194 MB |
-| `fasttext_parallel` native threads | 16 | 1 | 880,588 | 196 MB |
+| `fasttext_threaded` native threads | 8 | 1 | 815,628 | 194 MB |
+| `fasttext_threaded` native threads | 16 | 1 | 880,588 | 196 MB |
 | official fastText + Python processes | 4 | 4 | 998,273 | 811 MB |
 | official fastText + Python processes | 8 | 8 | 1,298,549 | 1,544 MB |
 | official fastText + Python processes | 16 | 16 | 685,018 | 2,993 MB |
@@ -202,7 +202,7 @@ uv run pytest
 Native C++ tests can be run with:
 
 ```bash
-uv run cmake -S . -B build -DFASTTEXT_PARALLEL_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+uv run cmake -S . -B build -DFASTTEXT_THREADED_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
 uv run cmake --build build
 uv run ctest --test-dir build --output-on-failure
 ```
@@ -211,14 +211,14 @@ Runtime-safety checks are available through sanitizer builds:
 
 ```bash
 uv run cmake -S . -B build-asan \
-  -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
-  -DFASTTEXT_PARALLEL_ENABLE_ASAN=ON \
+  -DFASTTEXT_THREADED_BUILD_TESTS=ON \
+  -DFASTTEXT_THREADED_ENABLE_ASAN=ON \
   -DCMAKE_BUILD_TYPE=Debug
 uv run cmake --build build-asan
 uv run ctest --test-dir build-asan --output-on-failure
 ```
 
-Use `FASTTEXT_PARALLEL_ENABLE_TSAN=ON` instead of ASAN for ThreadSanitizer.
+Use `FASTTEXT_THREADED_ENABLE_TSAN=ON` instead of ASAN for ThreadSanitizer.
 Run the full stress tool locally for concurrency and memory-pressure testing.
 
 Ruff and mypy are mandatory quality gates.
@@ -244,7 +244,7 @@ Trusted Publishing.
 
 ## Limitations
 
-- v1 targets Linux/macOS source builds.
-- Prebuilt wheels are not part of the initial release.
+- v1 targets Linux and macOS.
+- Windows wheels are not part of the initial release.
 - The primary speedup comes from batching. Per-row calls still pay Python call
   overhead and should not be used for throughput measurements.

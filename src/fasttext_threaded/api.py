@@ -1,4 +1,4 @@
-"""Public Python API for fasttext-parallel."""
+"""Public Python API for fasttext-threaded."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from typing import Final, TypeAlias, cast, overload
 
 import numpy as np
 
-from fasttext_parallel import _fasttext_parallel as _native
-from fasttext_parallel._typing import ProbabilityArray
-from fasttext_parallel.exceptions import InvalidInputError
+from fasttext_threaded import _fasttext_threaded as _native
+from fasttext_threaded._typing import ProbabilityArray
+from fasttext_threaded.exceptions import InvalidInputError
 
 LabelBatch: TypeAlias = list[list[str]]
 ProbabilityBatch: TypeAlias = list[ProbabilityArray]
@@ -24,7 +24,7 @@ def _check_line(entry: str) -> str:
     return f"{entry}\n"
 
 
-class FastTextParallel:
+class FastTextThreaded:
     """fastText-compatible model wrapper with native parallel batch inference."""
 
     __slots__ = ("f",)
@@ -34,7 +34,7 @@ class FastTextParallel:
             threads = os.cpu_count() or 1
         if threads <= 0:
             raise InvalidInputError("thread_count must be greater than zero")
-        self.f = _native.FastTextParallelModel(str(Path(model_path)), threads)
+        self.f = _native.FastTextThreadedModel(str(Path(model_path)), threads)
 
     @overload
     def predict(
@@ -97,6 +97,6 @@ class FastTextParallel:
 
 def load_model(
     path: str | os.PathLike[str], threads: int | None = None
-) -> FastTextParallel:
+) -> FastTextThreaded:
     """Load a fastText model for parallel inference."""
-    return FastTextParallel(path, threads=threads)
+    return FastTextThreaded(path, threads=threads)

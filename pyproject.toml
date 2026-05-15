@@ -3,13 +3,13 @@ requires = ["scikit-build-core>=0.10", "pybind11>=2.12"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "fasttext-parallel"
+name = "fasttext-threaded"
 version = "0.1.0"
 description = "fastText inference with one loaded model and native C++ batch parallelism"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "fasttext-parallel contributors" }]
+authors = [{ name = "fasttext-threaded contributors" }]
 keywords = ["fasttext", "inference", "parallel", "pybind11", "nlp"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -39,13 +39,13 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dariuszkajtoch/fasttext-parallel"
-Repository = "https://github.com/dariuszkajtoch/fasttext-parallel"
+Homepage = "https://github.com/dkajtoch/fasttext-parallel"
+Repository = "https://github.com/dkajtoch/fasttext-parallel"
 
 [tool.scikit-build]
 cmake.version = ">=3.18"
 build-dir = "build/{wheel_tag}"
-wheel.packages = ["src/fasttext_parallel"]
+wheel.packages = ["src/fasttext_threaded"]
 sdist.include = [
   "CMakeLists.txt",
   "cpp",
@@ -87,7 +87,7 @@ addopts = "-ra"
 [tool.cibuildwheel]
 build = "cp310-* cp311-* cp312-*"
 skip = ["*-musllinux_*", "pp*"]
-test-command = "python -c \"import fasttext_parallel; print(fasttext_parallel.__all__)\""
+test-command = "python -c \"import fasttext_threaded; print(fasttext_threaded.__all__)\""
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]

@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for working on `fasttext-parallel`. This project has a small public API and a native C++ core, so changes should preserve fastText compatibility and be backed by tests.
+Thanks for working on `fasttext-threaded`. This project has a small public API and a native C++ core, so changes should preserve fastText compatibility and be backed by tests.
 
 ## Development Setup
 
@@ -27,7 +27,7 @@ uv run pytest
 Run C++ tests with:
 
 ```bash
-uv run cmake -S . -B build -DFASTTEXT_PARALLEL_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+uv run cmake -S . -B build -DFASTTEXT_THREADED_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
 uv run cmake --build build --parallel
 uv run ctest --test-dir build --output-on-failure
 ```
@@ -57,7 +57,7 @@ Important expectations:
 
 ## Typing
 
-Avoid `Any`. If an untyped dependency boundary is needed, add a narrow `Protocol` in `src/fasttext_parallel/_typing.py` and use an explicit `cast` at the boundary.
+Avoid `Any`. If an untyped dependency boundary is needed, add a narrow `Protocol` in `src/fasttext_threaded/_typing.py` and use an explicit `cast` at the boundary.
 
 The repository runs mypy in strict mode. Keep public wrappers typed and include stubs for native extension symbols when needed.
 
@@ -82,8 +82,8 @@ Run the scaling benchmark with:
 
 ```bash
 uv run python benchmarks/benchmark_scaling.py \
-  --model .cache/fasttext-parallel/lid/lid.176.bin \
-  --input .cache/fasttext-parallel/lid/lid_input.txt \
+  --model .cache/fasttext-threaded/lid/lid.176.bin \
+  --input .cache/fasttext-threaded/lid/lid_input.txt \
   --workers 1,2,4,8,16 \
   --process-workers 1,2,4,8,16 \
   --batch-size 2048 \
@@ -98,21 +98,21 @@ Run sanitizer builds for native changes when practical:
 
 ```bash
 uv run cmake -S . -B build-asan \
-  -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
-  -DFASTTEXT_PARALLEL_ENABLE_ASAN=ON \
+  -DFASTTEXT_THREADED_BUILD_TESTS=ON \
+  -DFASTTEXT_THREADED_ENABLE_ASAN=ON \
   -DCMAKE_BUILD_TYPE=Debug
 uv run cmake --build build-asan --parallel
 uv run ctest --test-dir build-asan --output-on-failure
 ```
 
-Use `FASTTEXT_PARALLEL_ENABLE_TSAN=ON` for ThreadSanitizer.
+Use `FASTTEXT_THREADED_ENABLE_TSAN=ON` for ThreadSanitizer.
 
 Run the full stress tool for shared-model concurrency checks:
 
 ```bash
 uv run python stress/stress_inference.py \
-  --model .cache/fasttext-parallel/lid/lid.176.bin \
-  --input .cache/fasttext-parallel/lid/lid_input.txt \
+  --model .cache/fasttext-threaded/lid/lid.176.bin \
+  --input .cache/fasttext-threaded/lid/lid_input.txt \
   --threads 16 \
   --callers 32 \
   --batch-size 8192 \

@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(fasttext_parallel LANGUAGES CXX)
+project(fasttext_threaded LANGUAGES CXX)
 
-option(FASTTEXT_PARALLEL_BUILD_TESTS "Build C++ tests" OFF)
-option(FASTTEXT_PARALLEL_ENABLE_ASAN "Build with AddressSanitizer" OFF)
-option(FASTTEXT_PARALLEL_ENABLE_TSAN "Build with ThreadSanitizer" OFF)
+option(FASTTEXT_THREADED_BUILD_TESTS "Build C++ tests" OFF)
+option(FASTTEXT_THREADED_ENABLE_ASAN "Build with AddressSanitizer" OFF)
+option(FASTTEXT_THREADED_ENABLE_TSAN "Build with ThreadSanitizer" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -51,59 +51,59 @@ set_target_properties(fasttext_vendor PROPERTIES
   POSITION_INDEPENDENT_CODE ON
 )
 
-if(FASTTEXT_PARALLEL_ENABLE_ASAN AND FASTTEXT_PARALLEL_ENABLE_TSAN)
+if(FASTTEXT_THREADED_ENABLE_ASAN AND FASTTEXT_THREADED_ENABLE_TSAN)
   message(FATAL_ERROR "AddressSanitizer and ThreadSanitizer cannot be enabled together")
 endif()
 
-set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "")
-if(FASTTEXT_PARALLEL_ENABLE_ASAN)
-  set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "-fsanitize=address,undefined")
-elseif(FASTTEXT_PARALLEL_ENABLE_TSAN)
-  set(FASTTEXT_PARALLEL_SANITIZER_FLAGS "-fsanitize=thread")
+set(FASTTEXT_THREADED_SANITIZER_FLAGS "")
+if(FASTTEXT_THREADED_ENABLE_ASAN)
+  set(FASTTEXT_THREADED_SANITIZER_FLAGS "-fsanitize=address,undefined")
+elseif(FASTTEXT_THREADED_ENABLE_TSAN)
+  set(FASTTEXT_THREADED_SANITIZER_FLAGS "-fsanitize=thread")
 endif()
 
-if(FASTTEXT_PARALLEL_SANITIZER_FLAGS)
+if(FASTTEXT_THREADED_SANITIZER_FLAGS)
   foreach(target fasttext_vendor)
     target_compile_options(${target} PRIVATE
-      ${FASTTEXT_PARALLEL_SANITIZER_FLAGS}
+      ${FASTTEXT_THREADED_SANITIZER_FLAGS}
       -fno-omit-frame-pointer
     )
-    target_link_options(${target} PRIVATE ${FASTTEXT_PARALLEL_SANITIZER_FLAGS})
+    target_link_options(${target} PRIVATE ${FASTTEXT_THREADED_SANITIZER_FLAGS})
   endforeach()
 endif()
 
-set(FASTTEXT_PARALLEL_SOURCES
+set(FASTTEXT_THREADED_SOURCES
   cpp/src/bindings.cpp
   cpp/src/parallel_model.cpp
   cpp/src/thread_pool.cpp
 )
 
-pybind11_add_module(_fasttext_parallel MODULE ${FASTTEXT_PARALLEL_SOURCES})
-target_compile_features(_fasttext_parallel PRIVATE cxx_std_17)
-target_include_directories(_fasttext_parallel PRIVATE
+pybind11_add_module(_fasttext_threaded MODULE ${FASTTEXT_THREADED_SOURCES})
+target_compile_features(_fasttext_threaded PRIVATE cxx_std_17)
+target_include_directories(_fasttext_threaded PRIVATE
   cpp/include
 )
-target_link_libraries(_fasttext_parallel PRIVATE fasttext_vendor)
-set_target_properties(_fasttext_parallel PROPERTIES
+target_link_libraries(_fasttext_threaded PRIVATE fasttext_vendor)
+set_target_properties(_fasttext_threaded PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
 )
 
-if(FASTTEXT_PARALLEL_SANITIZER_FLAGS)
-  target_compile_options(_fasttext_parallel PRIVATE
-    ${FASTTEXT_PARALLEL_SANITIZER_FLAGS}
+if(FASTTEXT_THREADED_SANITIZER_FLAGS)
+  target_compile_options(_fasttext_threaded PRIVATE
+    ${FASTTEXT_THREADED_SANITIZER_FLAGS}
     -fno-omit-frame-pointer
   )
-  target_link_options(_fasttext_parallel PRIVATE ${FASTTEXT_PARALLEL_SANITIZER_FLAGS})
+  target_link_options(_fasttext_threaded PRIVATE ${FASTTEXT_THREADED_SANITIZER_FLAGS})
 endif()
 
 if(UNIX AND NOT APPLE)
-  target_link_libraries(_fasttext_parallel PRIVATE pthread)
+  target_link_libraries(_fasttext_threaded PRIVATE pthread)
 endif()
 
-install(TARGETS _fasttext_parallel LIBRARY DESTINATION fasttext_parallel)
+install(TARGETS _fasttext_threaded LIBRARY DESTINATION fasttext_threaded)
 
-if(FASTTEXT_PARALLEL_BUILD_TESTS)
+if(FASTTEXT_THREADED_BUILD_TESTS)
   enable_testing()
   add_subdirectory(cpp/tests)
 endif()

@@ -18,8 +18,8 @@ from typing import cast
 
 import psutil
 
-import fasttext_parallel
-from fasttext_parallel._typing import OfficialFastTextModel, OfficialFastTextModule
+import fasttext_threaded
+from fasttext_threaded._typing import OfficialFastTextModel, OfficialFastTextModule
 
 _PROCESS_MODEL: OfficialFastTextModel | None = None
 
@@ -207,7 +207,7 @@ def _official_thread_runner(
 
 
 def _parallel_runner(
-    model: fasttext_parallel.FastTextParallel, batches: list[list[str]]
+    model: fasttext_threaded.FastTextThreaded, batches: list[list[str]]
 ) -> Callable[[], int]:
     def run() -> int:
         return sum(len(model.predict(batch)[0]) for batch in batches)
@@ -371,9 +371,9 @@ def _run_scenario(args: argparse.Namespace) -> ScalingResult:
             runner=_official_thread_runner(model, batches, workers),
         )
 
-    if method == "fasttext_parallel_threads":
+    if method == "fasttext_threaded_threads":
         start = time.perf_counter()
-        parallel_model = fasttext_parallel.load_model(args.model, threads=workers)
+        parallel_model = fasttext_threaded.load_model(args.model, threads=workers)
         load_wall = time.perf_counter() - start
         return _measure(
             method=method,
@@ -472,7 +472,7 @@ def _build_scenarios(
     scenarios = [Scenario("official_batch", 1, 1)]
     for workers in worker_counts:
         scenarios.append(Scenario("official_python_threads", workers, 1))
-        scenarios.append(Scenario("fasttext_parallel_threads", workers, 1))
+        scenarios.append(Scenario("fasttext_threaded_threads", workers, 1))
     for workers in process_worker_counts:
         scenarios.append(Scenario("official_python_processes", workers, workers))
     return scenarios
@@ -490,7 +490,7 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path(".cache") / "fasttext-parallel" / "scaling",
+        default=Path(".cache") / "fasttext-threaded" / "scaling",
     )
     parser.add_argument("--scenario-method", default=None)
     parser.add_argument("--scenario-workers", type=int, default=None)
@@ -523,7 +523,7 @@ def main() -> None:
     scenarios = _build_scenarios(args.workers, process_workers)
     results: list[ScalingResult] = []
 
-    with tempfile.TemporaryDirectory(prefix="fasttext-parallel-scaling-") as temp:
+    with tempfile.TemporaryDirectory(prefix="fasttext-threaded-scaling-") as temp:
         temp_dir = Path(temp)
         for scenario in scenarios:
             print(f"running {scenario.method} workers={scenario.workers}")

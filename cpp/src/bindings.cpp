@@ -7,12 +7,12 @@
 #include <utility>
 #include <vector>
 
-#include "fasttext_parallel/errors.h"
-#include "fasttext_parallel/parallel_model.h"
+#include "fasttext_threaded/errors.h"
+#include "fasttext_threaded/parallel_model.h"
 
 namespace py = pybind11;
 
-namespace fasttext_parallel {
+namespace fasttext_threaded {
 namespace {
 
 py::tuple predictions_to_python(const std::vector<PredictionResult>& results) {
@@ -41,35 +41,35 @@ py::tuple predictions_to_python(const std::vector<PredictionResult>& results) {
 }
 
 }  // namespace
-}  // namespace fasttext_parallel
+}  // namespace fasttext_threaded
 
-PYBIND11_MODULE(_fasttext_parallel, module) {
-  module.doc() = "Native extension for fasttext-parallel";
+PYBIND11_MODULE(_fasttext_threaded, module) {
+  module.doc() = "Native extension for fasttext-threaded";
 
-  auto base_error = py::register_exception<fasttext_parallel::FastTextParallelError>(
-      module, "FastTextParallelError", PyExc_RuntimeError);
-  py::register_exception<fasttext_parallel::ModelLoadError>(module, "ModelLoadError",
+  auto base_error = py::register_exception<fasttext_threaded::FastTextThreadedError>(
+      module, "FastTextThreadedError", PyExc_RuntimeError);
+  py::register_exception<fasttext_threaded::ModelLoadError>(module, "ModelLoadError",
                                                             base_error.ptr());
-  py::register_exception<fasttext_parallel::PredictionError>(module, "PredictionError",
+  py::register_exception<fasttext_threaded::PredictionError>(module, "PredictionError",
                                                              base_error.ptr());
-  py::register_exception<fasttext_parallel::InvalidInputError>(
+  py::register_exception<fasttext_threaded::InvalidInputError>(
       module, "InvalidInputError", base_error.ptr());
 
-  py::class_<fasttext_parallel::ParallelModel>(module, "FastTextParallelModel")
+  py::class_<fasttext_threaded::ParallelModel>(module, "FastTextThreadedModel")
       .def(py::init<const std::string&, std::size_t>(), py::arg("model_path"),
            py::arg("threads"), py::call_guard<py::gil_scoped_release>())
-      .def_property_readonly("threads", &fasttext_parallel::ParallelModel::threads)
+      .def_property_readonly("threads", &fasttext_threaded::ParallelModel::threads)
       .def(
           "predict_many",
-          [](fasttext_parallel::ParallelModel& model,
+          [](fasttext_threaded::ParallelModel& model,
              const std::vector<std::string>& lines, int32_t k, fasttext::real threshold,
              const char* /*on_unicode_error*/) {
-            std::vector<fasttext_parallel::PredictionResult> results;
+            std::vector<fasttext_threaded::PredictionResult> results;
             {
               py::gil_scoped_release release;
               results = model.predict_many(lines, k, threshold);
             }
-            return fasttext_parallel::predictions_to_python(results);
+            return fasttext_threaded::predictions_to_python(results);
           },
           py::arg("lines"), py::arg("k"), py::arg("threshold"),
           py::arg("on_unicode_error") = "strict");

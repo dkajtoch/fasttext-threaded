@@ -2,10 +2,10 @@
 #include <numeric>
 #include <vector>
 
-#include "fasttext_parallel/thread_pool.h"
+#include "fasttext_threaded/thread_pool.h"
 
 int main() {
-  fasttext_parallel::ThreadPool pool(4);
+  fasttext_threaded::ThreadPool pool(4);
   std::vector<std::future<int>> futures;
 
   for (int value = 0; value < 32; ++value) {

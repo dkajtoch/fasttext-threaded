@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "fasttext.h"
-#include "fasttext_parallel/thread_pool.h"
+#include "fasttext_threaded/thread_pool.h"
 
-namespace fasttext_parallel {
+namespace fasttext_threaded {
 
 struct PredictionResult {
   std::vector<std::string> labels;
@@ -34,4 +34,4 @@ class ParallelModel {
   ThreadPool pool_;
 };
 
-}  // namespace fasttext_parallel
+}  // namespace fasttext_threaded

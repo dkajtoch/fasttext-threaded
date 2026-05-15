@@ -7,7 +7,7 @@ from pathlib import Path
 
 import psutil
 
-import fasttext_parallel
+import fasttext_threaded
 
 
 def main() -> None:
@@ -19,7 +19,7 @@ def main() -> None:
     process = psutil.Process(os.getpid())
     before = process.memory_info().rss / (1024 * 1024)
     start = time.perf_counter()
-    model = fasttext_parallel.load_model(args.model, threads=args.threads)
+    model = fasttext_threaded.load_model(args.model, threads=args.threads)
     after = process.memory_info().rss / (1024 * 1024)
     print(f"load_seconds={time.perf_counter() - start:.4f}")
     print(f"threads={model.threads}")

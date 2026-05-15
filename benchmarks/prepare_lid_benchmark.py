@@ -56,7 +56,7 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path(".cache") / "fasttext-parallel" / "lid",
+        default=Path(".cache") / "fasttext-threaded" / "lid",
     )
     parser.add_argument("--model-kind", choices=sorted(MODEL_URLS), default="bin")
     parser.add_argument("--repeat", type=int, default=5000)

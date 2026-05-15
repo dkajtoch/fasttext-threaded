@@ -1,16 +1,16 @@
 """fastText-compatible parallel inference."""
 
-from fasttext_parallel.api import FastTextParallel, load_model
-from fasttext_parallel.exceptions import (
-    FastTextParallelError,
+from fasttext_threaded.api import FastTextThreaded, load_model
+from fasttext_threaded.exceptions import (
+    FastTextThreadedError,
     InvalidInputError,
     ModelLoadError,
     PredictionError,
 )
 
 __all__ = [
-    "FastTextParallel",
-    "FastTextParallelError",
+    "FastTextThreaded",
+    "FastTextThreadedError",
     "InvalidInputError",
     "ModelLoadError",
     "PredictionError",

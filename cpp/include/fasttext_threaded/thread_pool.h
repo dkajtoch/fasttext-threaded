@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace fasttext_parallel {
+namespace fasttext_threaded {
 
 class ThreadPool {
  public:
@@ -52,4 +52,4 @@ class ThreadPool {
   bool stop_{false};
 };
 
-}  // namespace fasttext_parallel
+}  // namespace fasttext_threaded

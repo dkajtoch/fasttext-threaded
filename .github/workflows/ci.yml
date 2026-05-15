@@ -41,7 +41,7 @@ jobs:
           PYTHON_EXECUTABLE="$(uv run python -c 'import sys; print(sys.executable)')"
           uv run cmake -S . -B build \
             -DPython3_EXECUTABLE="${PYTHON_EXECUTABLE}" \
-            -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
+            -DFASTTEXT_THREADED_BUILD_TESTS=ON \
             -DCMAKE_BUILD_TYPE=Release
           uv run cmake --build build --parallel
           uv run ctest --test-dir build --output-on-failure
@@ -55,9 +55,9 @@ jobs:
         sanitizer: [asan, tsan]
         include:
           - sanitizer: asan
-            cmake-flag: FASTTEXT_PARALLEL_ENABLE_ASAN
+            cmake-flag: FASTTEXT_THREADED_ENABLE_ASAN
           - sanitizer: tsan
-            cmake-flag: FASTTEXT_PARALLEL_ENABLE_TSAN
+            cmake-flag: FASTTEXT_THREADED_ENABLE_TSAN
 
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
           PYTHON_EXECUTABLE="$(uv run python -c 'import sys; print(sys.executable)')"
           uv run cmake -S . -B build-${{ matrix.sanitizer }} \
             -DPython3_EXECUTABLE="${PYTHON_EXECUTABLE}" \
-            -DFASTTEXT_PARALLEL_BUILD_TESTS=ON \
+            -DFASTTEXT_THREADED_BUILD_TESTS=ON \
             -D${{ matrix.cmake-flag }}=ON \
             -DCMAKE_BUILD_TYPE=Debug
           uv run cmake --build build-${{ matrix.sanitizer }} --parallel

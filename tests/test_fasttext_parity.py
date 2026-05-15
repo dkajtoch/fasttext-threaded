@@ -4,8 +4,8 @@ from pathlib import Path
 
 import numpy as np
 
-import fasttext_parallel
-from fasttext_parallel._typing import OfficialFastTextModule
+import fasttext_threaded
+from fasttext_threaded._typing import OfficialFastTextModule
 
 
 def test_single_prediction_matches_official_fasttext(
@@ -13,7 +13,7 @@ def test_single_prediction_matches_official_fasttext(
     official_fasttext: OfficialFastTextModule,
 ) -> None:
     baseline = official_fasttext.load_model(str(tiny_model_path))
-    parallel = fasttext_parallel.load_model(tiny_model_path, threads=2)
+    parallel = fasttext_threaded.load_model(tiny_model_path, threads=2)
 
     expected_labels, expected_probs = baseline.predict("alpha beta", k=2)
     actual_labels, actual_probs = parallel.predict("alpha beta", k=2)
@@ -28,7 +28,7 @@ def test_batch_prediction_matches_official_fasttext(
 ) -> None:
     texts = ["alpha beta", "gamma delta", "one two"]
     baseline = official_fasttext.load_model(str(tiny_model_path))
-    parallel = fasttext_parallel.load_model(tiny_model_path, threads=2)
+    parallel = fasttext_threaded.load_model(tiny_model_path, threads=2)
 
     expected_labels, expected_probs = baseline.predict(texts, k=2)
     actual_labels, actual_probs = parallel.predict(texts, k=2)
@@ -40,7 +40,7 @@ def test_batch_prediction_matches_official_fasttext(
 
 
 def test_newline_validation_matches_official_message(tiny_model_path: Path) -> None:
-    parallel = fasttext_parallel.load_model(tiny_model_path, threads=2)
+    parallel = fasttext_threaded.load_model(tiny_model_path, threads=2)
 
     try:
         parallel.predict("bad\ninput")
@@ -51,7 +51,7 @@ def test_newline_validation_matches_official_message(tiny_model_path: Path) -> N
 
 
 def test_predict_batch_alias_matches_predict(tiny_model_path: Path) -> None:
-    parallel = fasttext_parallel.load_model(tiny_model_path, threads=2)
+    parallel = fasttext_threaded.load_model(tiny_model_path, threads=2)
     texts = ["alpha beta", "gamma delta"]
 
     predict_labels, predict_probs = parallel.predict(texts, k=1)
@@ -68,7 +68,7 @@ def test_threshold_outside_probability_range_matches_official_fasttext(
 ) -> None:
     texts = ["alpha beta", "gamma delta"]
     baseline = official_fasttext.load_model(str(tiny_model_path))
-    parallel = fasttext_parallel.load_model(tiny_model_path, threads=2)
+    parallel = fasttext_threaded.load_model(tiny_model_path, threads=2)
 
     for threshold in (-0.5, 1.5):
         expected_labels, expected_probs = baseline.predict(

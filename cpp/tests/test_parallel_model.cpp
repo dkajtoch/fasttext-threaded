@@ -4,26 +4,26 @@
 #include <string>
 #include <vector>
 
-#include "fasttext_parallel/errors.h"
-#include "fasttext_parallel/parallel_model.h"
+#include "fasttext_threaded/errors.h"
+#include "fasttext_threaded/parallel_model.h"
 
 int main() {
   try {
-    fasttext_parallel::ParallelModel missing("/definitely/missing/model.bin", 2);
+    fasttext_threaded::ParallelModel missing("/definitely/missing/model.bin", 2);
     (void)missing;
     assert(false);
-  } catch (const fasttext_parallel::ModelLoadError&) {
+  } catch (const fasttext_threaded::ModelLoadError&) {
   }
 
-  const char* model_path = std::getenv("FASTTEXT_PARALLEL_TEST_MODEL");
+  const char* model_path = std::getenv("FASTTEXT_THREADED_TEST_MODEL");
   if (model_path == nullptr) {
-    std::cerr << "FASTTEXT_PARALLEL_TEST_MODEL not set; skipping model test\n";
+    std::cerr << "FASTTEXT_THREADED_TEST_MODEL not set; skipping model test\n";
     return 0;
   }
 
-  fasttext_parallel::ParallelModel model(model_path, 2);
+  fasttext_threaded::ParallelModel model(model_path, 2);
   std::vector<std::string> lines = {"alpha beta\n", "gamma delta\n"};
-  std::vector<fasttext_parallel::PredictionResult> results =
+  std::vector<fasttext_threaded::PredictionResult> results =
       model.predict_many(lines, 1, 0.0F);
 
   assert(results.size() == lines.size());
@@ -34,7 +34,7 @@ int main() {
   try {
     (void)model.predict_many(lines, 0, 0.0F);
     assert(false);
-  } catch (const fasttext_parallel::InvalidInputError&) {
+  } catch (const fasttext_threaded::InvalidInputError&) {
   }
 
   return 0;

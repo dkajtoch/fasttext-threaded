@@ -3,11 +3,11 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import fasttext_parallel
+import fasttext_threaded
 
 
 def test_concurrent_python_callers_share_one_model(tiny_model_path: Path) -> None:
-    model = fasttext_parallel.load_model(tiny_model_path, threads=4)
+    model = fasttext_threaded.load_model(tiny_model_path, threads=4)
     texts = ["alpha beta", "gamma delta", "one two"] * 32
 
     def run_once() -> int:

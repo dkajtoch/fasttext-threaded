@@ -1,8 +1,8 @@
-#include "fasttext_parallel/thread_pool.h"
+#include "fasttext_threaded/thread_pool.h"
 
 #include <stdexcept>
 
-namespace fasttext_parallel {
+namespace fasttext_threaded {
 
 ThreadPool::ThreadPool(std::size_t thread_count) {
   if (thread_count == 0) {
@@ -53,4 +53,4 @@ void ThreadPool::worker_loop() {
   }
 }
 
-}  // namespace fasttext_parallel
+}  // namespace fasttext_threaded

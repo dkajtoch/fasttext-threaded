@@ -5,7 +5,7 @@ from typing import cast
 
 import pytest
 
-from fasttext_parallel._typing import OfficialFastTextModule
+from fasttext_threaded._typing import OfficialFastTextModule
 
 
 @pytest.fixture(scope="session")
