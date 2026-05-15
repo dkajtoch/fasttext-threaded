@@ -157,6 +157,23 @@ model-copy count, machine metadata, and a four-panel plot. Each measured
 scenario runs in a fresh subprocess, and RSS is captured as peak parent-plus-child
 memory for that scenario.
 
+Example result from a local Apple Silicon run with `lid.176.bin`, 54k documents,
+batch size 2048, and 5 repeats:
+
+| Method | Workers | Model copies | Docs/s | Peak RSS |
+|---|---:|---:|---:|---:|
+| official fastText batch | 1 | 1 | 284,996 | 192 MB |
+| official fastText + Python threads | 16 | 1 | 178,204 | 200 MB |
+| `fasttext_parallel` native threads | 8 | 1 | 815,628 | 194 MB |
+| `fasttext_parallel` native threads | 16 | 1 | 880,588 | 196 MB |
+| official fastText + Python processes | 4 | 4 | 998,273 | 811 MB |
+| official fastText + Python processes | 8 | 8 | 1,298,549 | 1,544 MB |
+| official fastText + Python processes | 16 | 16 | 685,018 | 2,993 MB |
+
+The important tradeoff is that multiprocessing can win peak throughput at 8
+processes on this machine, but it does so by loading many model copies. The
+native-thread path keeps one model copy and has a much smaller memory footprint.
+
 ## Stress Test
 
 Run:
