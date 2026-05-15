@@ -229,7 +229,7 @@ Releases are published by GitHub Actions using PyPI Trusted Publishing. No
 long-lived PyPI token is required.
 
 1. Configure the PyPI project trusted publisher for this repository,
-   `.github/workflows/release.yml`, and the `pypi` GitHub environment.
+   `.github/workflows/release.yaml`, and the `pypi` GitHub environment.
 2. Require manual approval on the `pypi` environment.
 3. Push a SemVer tag:
 
