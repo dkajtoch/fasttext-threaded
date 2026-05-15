@@ -1,0 +1,6 @@
+__label__alpha alpha beta alpha
+__label__alpha beta alpha beta
+__label__beta gamma delta gamma
+__label__beta delta gamma delta
+__label__gamma one two three
+__label__gamma two three one
