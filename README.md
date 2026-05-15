@@ -202,7 +202,7 @@ uv run ctest --test-dir build-asan --output-on-failure
 ```
 
 Use `FASTTEXT_PARALLEL_ENABLE_TSAN=ON` instead of ASAN for ThreadSanitizer.
-CI also runs a short shared-model stress smoke test.
+Run the full stress tool locally for concurrency and memory-pressure testing.
 
 Ruff and mypy are mandatory quality gates.
 

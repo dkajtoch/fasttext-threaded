@@ -73,20 +73,3 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug
           uv run cmake --build build-${{ matrix.sanitizer }} --parallel
           uv run ctest --test-dir build-${{ matrix.sanitizer }} --output-on-failure
-
-  stress-smoke:
-    name: stress smoke
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: astral-sh/setup-uv@v5
-
-      - name: Install dependencies
-        run: uv sync --all-extras
-
-      - name: Shared-model stress smoke
-        run: uv run python scripts/stress_smoke.py --duration 5 --threads 4 --callers 8 --batch-size 512

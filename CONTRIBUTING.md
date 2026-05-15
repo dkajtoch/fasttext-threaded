@@ -107,10 +107,16 @@ uv run ctest --test-dir build-asan --output-on-failure
 
 Use `FASTTEXT_PARALLEL_ENABLE_TSAN=ON` for ThreadSanitizer.
 
-A short stress smoke is available with:
+Run the full stress tool for shared-model concurrency checks:
 
 ```bash
-uv run python scripts/stress_smoke.py --duration 5 --threads 4 --callers 8 --batch-size 512
+uv run python stress/stress_inference.py \
+  --model .cache/fasttext-parallel/lid/lid.176.bin \
+  --input .cache/fasttext-parallel/lid/lid_input.txt \
+  --threads 16 \
+  --callers 32 \
+  --batch-size 8192 \
+  --duration 60
 ```
 
 ## Packaging And Release
