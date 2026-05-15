@@ -39,8 +39,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dkajtoch/fasttext-parallel"
-Repository = "https://github.com/dkajtoch/fasttext-parallel"
+Homepage = "https://github.com/dkajtoch/fasttext-threaded"
+Repository = "https://github.com/dkajtoch/fasttext-threaded"
 
 [tool.scikit-build]
 cmake.version = ">=3.18"
